@@ -47,4 +47,3 @@ If they prefer running all pending migrations instead:
 php artisan migrate --force
 ```
 
-"# matchedin-backend" 

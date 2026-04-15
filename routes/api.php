@@ -72,6 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/enterprise-profiles/me', [\App\Http\Controllers\EnterpriseProfileController::class, 'updateMe']);
 
     // Interactions
+    Route::get('/enterprises/followed', [\App\Http\Controllers\InteractionController::class, 'getFollowedEnterprises']);
     Route::post('/enterprises/{id}/follow', [\App\Http\Controllers\InteractionController::class, 'toggleFollowEnterprise']);
     Route::get('/enterprises/{id}/is-following', [\App\Http\Controllers\InteractionController::class, 'isFollowingEnterprise']);
     Route::post('/students/{id}/save', [\App\Http\Controllers\InteractionController::class, 'toggleSaveStudent']);

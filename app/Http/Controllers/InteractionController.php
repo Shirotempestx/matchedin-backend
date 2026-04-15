@@ -53,6 +53,22 @@ class InteractionController extends Controller
     }
 
     /**
+     * Get all enterprises the student is following
+     */
+    public function getFollowedEnterprises(Request $request): JsonResponse
+    {
+        $student = $request->user();
+
+        if ($student->role !== 'student') {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $enterprises = $student->followingEnterprises()->withCount('offres')->get();
+
+        return response()->json(['enterprises' => $enterprises]);
+    }
+
+    /**
      * Save or Unsave a Student (Enterprise Action)
      */
     public function toggleSaveStudent(Request $request, $studentId): JsonResponse
