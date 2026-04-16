@@ -16,7 +16,7 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check() || Auth::user()->role !== 'Admin') {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
             return response()->json(['message' => __('messages.forbidden')], 403);
         }
         return $next($request);
