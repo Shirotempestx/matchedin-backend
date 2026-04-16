@@ -48,7 +48,11 @@ class StudentProfileController extends Controller
             'cvUrl' => ['nullable', 'string', 'max:255'],
             'avatar_url' => ['nullable', 'string', 'max:500'],
             'banner_url' => ['nullable', 'string', 'max:500'],
-            'profile_type' => ['nullable', 'string', 'in:IT,NON_IT'],              'education_level' => ['nullable', 'string', 'max:255'],            'preferred_language' => ['nullable', 'in:fr,en'],
+            'avatarUrl' => ['nullable', 'string', 'max:500'],
+            'bannerUrl' => ['nullable', 'string', 'max:500'],
+            'profile_type' => ['nullable', 'string', 'in:IT,NON_IT'],
+            'education_level' => ['nullable', 'string', 'max:255'],
+            'preferred_language' => ['nullable', 'in:fr,en'],
             'skills' => ['nullable', 'array'],
             'skills.*' => ['nullable'],
         ]);
@@ -65,6 +69,8 @@ class StudentProfileController extends Controller
         if (array_key_exists('portfolioUrl', $validated)) $student->portfolio_url = $validated['portfolioUrl'];
         if (array_key_exists('avatar_url', $validated)) $student->avatar_url = $validated['avatar_url'];
         if (array_key_exists('banner_url', $validated)) $student->banner_url = $validated['banner_url'];
+        if (array_key_exists('avatarUrl', $validated)) $student->avatar_url = $validated['avatarUrl'];
+        if (array_key_exists('bannerUrl', $validated)) $student->banner_url = $validated['bannerUrl'];
         if (array_key_exists('profile_type', $validated)) $student->profile_type = $validated['profile_type'];
         if (array_key_exists('education_level', $validated)) $student->education_level = $validated['education_level'];
         if (array_key_exists('preferred_language', $validated)) $student->preferred_language = $validated['preferred_language'];
@@ -183,20 +189,51 @@ class StudentProfileController extends Controller
 
         $trimmed = trim($url);
 
-        if (str_contains($trimmed, '/api/uploads/')) {
+        if (str_starts_with($trimmed, 'http://') || str_starts_with($trimmed, 'https://')) {
+            if (str_contains($trimmed, '/api/uploads/')) {
+                return $trimmed;
+            }
+
+            $storageNeedle = '/storage/uploads/';
+            $storagePos = strpos($trimmed, $storageNeedle);
+            if ($storagePos !== false) {
+                $relativeFromStorage = substr($trimmed, $storagePos + strlen('/storage/'));
+                return url('/api/uploads/' . ltrim($relativeFromStorage, '/'));
+            }
+
+            $uploadsNeedle = '/uploads/';
+            $uploadsPos = strpos($trimmed, $uploadsNeedle);
+            if ($uploadsPos !== false) {
+                $relativeFromUploads = substr($trimmed, $uploadsPos + 1);
+                return url('/api/uploads/' . ltrim($relativeFromUploads, '/'));
+            }
+
             return $trimmed;
         }
 
-        $needle = '/storage/uploads/';
-        $pos = strpos($trimmed, $needle);
-
-        if ($pos === false) {
-            return $trimmed;
+        if (str_starts_with($trimmed, '/api/uploads/')) {
+            return url($trimmed);
         }
 
-        $relativePath = substr($trimmed, $pos + strlen('/storage/'));
+        if (str_starts_with($trimmed, '/storage/uploads/')) {
+            $relativePath = ltrim(substr($trimmed, strlen('/storage/')), '/');
+            return url('/api/uploads/' . $relativePath);
+        }
 
-        return url('/api/uploads/' . ltrim($relativePath, '/'));
+        if (str_starts_with($trimmed, 'storage/uploads/')) {
+            $relativePath = ltrim(substr($trimmed, strlen('storage/')), '/');
+            return url('/api/uploads/' . $relativePath);
+        }
+
+        if (str_starts_with($trimmed, '/uploads/')) {
+            return url('/api/uploads/' . ltrim($trimmed, '/'));
+        }
+
+        if (str_starts_with($trimmed, 'uploads/')) {
+            return url('/api/uploads/' . $trimmed);
+        }
+
+        return url('/api/uploads/' . ltrim($trimmed, '/'));
     }
 
     private function isStudentRole(mixed $role): bool
