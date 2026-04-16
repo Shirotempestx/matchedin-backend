@@ -21,6 +21,16 @@ class AdminReferenceController extends Controller
     // --- Skills Management ---
     public function storeSkill(Request $request)
     {
+        $name = trim((string) $request->input('nom_competence', ''));
+        $category = trim((string) $request->input('category', ''));
+        $weight = (int) ($request->input('weight', 1));
+
+        $request->merge([
+            'nom_competence' => $name,
+            'category' => $category,
+            'weight' => $weight,
+        ]);
+
         $request->validate([
             'nom_competence' => 'required|string|max:100|unique:Competences,nom_competence',
             'category' => 'nullable|string|max:50',
@@ -29,7 +39,7 @@ class AdminReferenceController extends Controller
 
         $id = DB::table('Competences')->insertGetId([
             'nom_competence' => $request->nom_competence,
-            'category' => $request->category ?? 'IT',
+            'category' => $request->category !== '' ? $request->category : 'IT',
             'weight' => $request->weight ?? 1,
             'created_at' => now(),
             'updated_at' => now(),

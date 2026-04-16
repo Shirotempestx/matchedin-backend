@@ -21,11 +21,11 @@ class NotificationController extends Controller
         $query = $request->user()->notifications()->latest();
 
         if ($request->filled('type')) {
-            $query->whereJsonPath('data->type', '=', $request->type);
+            $query->whereRaw("(data->>'type') = ?", [(string) $request->type]);
         }
 
         if ($request->filled('severity')) {
-            $query->whereJsonPath('data->severity', '=', $request->severity);
+            $query->whereRaw("(data->>'severity') = ?", [(string) $request->severity]);
         }
 
         if ($request->filled('is_read')) {
