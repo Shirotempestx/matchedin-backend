@@ -43,7 +43,7 @@ class AdminReferenceController extends Controller
             'weight' => $request->weight ?? 1,
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
+        ], 'id_competence');
 
         return response()->json(['message' => 'Compétence ajoutée', 'skill' => DB::table('Competences')->where('id_competence', $id)->first()]);
     }
@@ -67,7 +67,7 @@ class AdminReferenceController extends Controller
             'code_postal' => $request->code_postal,
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
+        ], 'id_ville');
 
         return response()->json(['message' => 'Ville ajoutée', 'city' => DB::table('Villes')->where('id_ville', $id)->first()]);
     }
@@ -89,7 +89,7 @@ class AdminReferenceController extends Controller
             'libelle' => $request->libelle,
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
+        ], 'id_niveau');
 
         return response()->json(['message' => 'Niveau ajouté', 'education' => DB::table('Niveaux_Etude')->where('id_niveau', $id)->first()]);
     }
