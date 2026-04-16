@@ -30,9 +30,10 @@ class ComprehensiveTestDataSeeder extends Seeder
         );
 
         // 2. FREE TIER STUDENT
-        $studentFree = User::create([
+        $studentFree = User::updateOrCreate(
+            ['email' => 'ahmed.bennani@email.com'],
+            [
             'name' => 'Ahmed Bennani',
-            'email' => 'ahmed.bennani@email.com',
             'password' => Hash::make('password123'),
             'role' => 'student',
             'status' => 'active',
@@ -51,12 +52,14 @@ class ComprehensiveTestDataSeeder extends Seeder
                 ['id' => $skillMap['React'] ?? 3, 'level' => 1],
                 ['id' => $skillMap['Git'] ?? 7, 'level' => 2],
             ],
-        ]);
+            ]
+        );
 
         // 3. PRO TIER STUDENT
-        $studentPro = User::create([
+        $studentPro = User::updateOrCreate(
+            ['email' => 'fatima.alaoui@email.com'],
+            [
             'name' => 'Fatima Zahra Alaoui',
-            'email' => 'fatima.alaoui@email.com',
             'password' => Hash::make('password123'),
             'role' => 'student',
             'status' => 'active',
@@ -82,12 +85,14 @@ class ComprehensiveTestDataSeeder extends Seeder
                 ['id' => $skillMap['Git'] ?? 7, 'level' => 3],
                 ['id' => $skillMap['Communication'] ?? 10, 'level' => 4],
             ],
-        ]);
+            ]
+        );
 
         // 4. ELITE TIER STUDENT
-        $studentElite = User::create([
+        $studentElite = User::updateOrCreate(
+            ['email' => 'karim.elfassi@email.com'],
+            [
             'name' => 'Karim El Fassi',
-            'email' => 'karim.elfassi@email.com',
             'password' => Hash::make('password123'),
             'role' => 'student',
             'status' => 'active',
@@ -115,12 +120,14 @@ class ComprehensiveTestDataSeeder extends Seeder
                 ['id' => $skillMap['Git'] ?? 7, 'level' => 5],
                 ['id' => $skillMap['Gestion de projet'] ?? 12, 'level' => 4],
             ],
-        ]);
+            ]
+        );
 
         // 5. FREE TIER ENTERPRISE
-        $enterpriseFree = User::create([
+        $enterpriseFree = User::updateOrCreate(
+            ['email' => 'hr@startupwave.ma'],
+            [
             'name' => 'StartupWave',
-            'email' => 'hr@startupwave.ma',
             'password' => Hash::make('password123'),
             'role' => 'enterprise',
             'status' => 'active',
@@ -132,12 +139,14 @@ class ComprehensiveTestDataSeeder extends Seeder
             'description' => 'StartupWave est une jeune startup en édition logicielle SaaS. Notre mission : transformer la manière dont les PME gèrent leurs opérations digitales.',
             'website' => 'startupwave.ma',
             'work_mode' => 'Hybrid',
-        ]);
+            ]
+        );
 
         // 6. PRO TIER ENTERPRISE
-        $enterprisePro = User::create([
+        $enterprisePro = User::updateOrCreate(
+            ['email' => 'careers@techhubsolutions.ma'],
+            [
             'name' => 'TechHub Solutions',
-            'email' => 'careers@techhubsolutions.ma',
             'password' => Hash::make('password123'),
             'role' => 'enterprise',
             'status' => 'active',
@@ -150,12 +159,14 @@ class ComprehensiveTestDataSeeder extends Seeder
             'website' => 'techhubsolutions.ma',
             'work_mode' => 'On-site',
             'contact_phone' => '+212 5 22 12 34 56',
-        ]);
+            ]
+        );
 
         // 7. ELITE TIER ENTERPRISE
-        $enterpriseElite = User::create([
+        $enterpriseElite = User::updateOrCreate(
+            ['email' => 'talents@innovategroup.com'],
+            [
             'name' => 'Innovate Group Pro',
-            'email' => 'talents@innovategroup.com',
             'password' => Hash::make('password123'),
             'role' => 'enterprise',
             'status' => 'active',
@@ -168,8 +179,8 @@ class ComprehensiveTestDataSeeder extends Seeder
             'website' => 'innovategroup.com',
             'work_mode' => 'Remote',
             'contact_phone' => '+212 5 22 98 76 54',
-        ]);
-
+            ]
+        );
         // OFFERS
         Offre::create([
             'user_id' => $enterpriseFree->id,
@@ -226,7 +237,7 @@ class ComprehensiveTestDataSeeder extends Seeder
             'contract_type' => 'Stage',
             'niveau_etude' => 'Bac+2',
             'places_demanded' => 3,
-            'internship_period' => '3 months',
+            'internship_period' => 3,
             'skills_required' => [
                 ['id' => $skillMap['React'] ?? 3, 'level' => 2],
                 ['id' => $skillMap['Laravel'] ?? 2, 'level' => 2],
