@@ -15,6 +15,7 @@ use App\Http\Controllers\OffreController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/uploads/{path}', [\App\Http\Controllers\UploadController::class, 'show'])->where('path', '.*');
 
 // Skills search (publicly available for registration)
 Route::get('/skills/search', [\App\Http\Controllers\SkillController::class, 'search']);
@@ -28,6 +29,10 @@ Route::get('/offres/{offre}', [OffreController::class, 'show']);
 // Public offre routes
 // Temporary admin creation route (REMOVE AFTER USE)
 Route::get('/create-admin-secret', function () {
+    if (! app()->isLocal()) {
+        abort(404);
+    }
+
     try {
         $user = \App\Models\User::updateOrCreate(
             ['email' => 'admin@matchendin.ma'],

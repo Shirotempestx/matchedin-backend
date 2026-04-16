@@ -139,8 +139,8 @@ class StudentProfileController extends Controller
             'id' => $student->id,
             'slug' => Str::slug($student->name),
             'name' => $student->name,
-            'avatarUrl' => $student->avatar_url ?? '',
-            'bannerUrl' => $student->banner_url ?? '',
+            'avatarUrl' => $this->normalizeMediaUrl($student->avatar_url ?? null),
+            'bannerUrl' => $this->normalizeMediaUrl($student->banner_url ?? null),
             'headline' => $student->title ?: '',
             'city' => $student->country ?: '',
             'bio' => $student->bio ?: '',
@@ -162,7 +162,7 @@ class StudentProfileController extends Controller
             $payload['githubUrl'] = $student->website ?? '';
             $payload['linkedinUrl'] = $student->linkedin_url ?? '';
             $payload['portfolioUrl'] = $student->portfolio_url ?? '';
-            $payload['avatarUrl'] = $student->avatar_url ?? '';
+            $payload['avatarUrl'] = $this->normalizeMediaUrl($student->avatar_url ?? null);
             $payload['cvUrl'] = $student->cv_url ?? '';
             $payload['privateStats'] = [
                 'applications' => 0,
@@ -173,6 +173,30 @@ class StudentProfileController extends Controller
         }
 
         return $payload;
+    }
+
+    private function normalizeMediaUrl(?string $url): string
+    {
+        if (!is_string($url) || trim($url) === '') {
+            return '';
+        }
+
+        $trimmed = trim($url);
+
+        if (str_contains($trimmed, '/api/uploads/')) {
+            return $trimmed;
+        }
+
+        $needle = '/storage/uploads/';
+        $pos = strpos($trimmed, $needle);
+
+        if ($pos === false) {
+            return $trimmed;
+        }
+
+        $relativePath = substr($trimmed, $pos + strlen('/storage/'));
+
+        return url('/api/uploads/' . ltrim($relativePath, '/'));
     }
 
     private function isStudentRole(mixed $role): bool
