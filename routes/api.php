@@ -119,6 +119,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/premium/import/offer', [\App\Http\Controllers\ImportPipelineController::class, 'importOffer']);
         Route::post('/premium/import/student-profile', [\App\Http\Controllers\ImportPipelineController::class, 'importStudentProfile']);
     });
+    Route::post('/chatbot', [\App\Http\Controllers\PremiumServiceController::class, 'chatbot']);
 });
 
 // Admin Routes
@@ -140,7 +141,6 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\IsAdmin::class])->prefix
     Route::delete('/references/cities/{id}', [\App\Http\Controllers\Admin\AdminReferenceController::class, 'destroyCity']);
     Route::post('/references/education', [\App\Http\Controllers\Admin\AdminReferenceController::class, 'storeEducation']);
     Route::delete('/references/education/{id}', [\App\Http\Controllers\Admin\AdminReferenceController::class, 'destroyEducation']);
-    Route::post('/chatbot', [\App\Http\Controllers\PremiumServiceController::class, 'chatbot']);
 });
 
 // Increment view count for an offer
