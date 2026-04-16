@@ -12,8 +12,8 @@ use Illuminate\Support\Str;
 
 class PremiumServiceController extends Controller
 {
-    private const GEMINI_DEFAULT_MODEL = 'gemini-2.5-flash';
-    private const GEMINI_FALLBACK_MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash'];
+    private const GEMINI_DEFAULT_MODEL = 'gemini-1.5-flash';
+    private const GEMINI_FALLBACK_MODELS = ['gemini-1.5-pro', 'gemini-1.0-pro'];
     private const WORK_MODES = ['Remote', 'Hybrid', 'On-site'];
     private const CONTRACT_TYPES = ['CDI', 'CDD', 'Stage', 'Freelance'];
     private const EDUCATION_LEVELS = ['Bac', 'Bac+2', 'Bac+3', 'Bac+5', 'Bac+8'];
@@ -169,6 +169,53 @@ class PremiumServiceController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Gemini integration failed: ' . $e->getMessage());
+        }
+
+        return response()->json(['error' => 'AI Service currently unavailable.'], 503);
+    }
+
+    /**
+     * Secure chatbot bridge for the frontend.
+     */
+    public function chatbot(Request $request)
+    {
+        $request->validate([
+            'message' => 'required|string|max:2000',
+            'system_prompt' => 'nullable|string|max:4000',
+        ]);
+
+        $geminiApiKey = env('GEMINI_API_KEY');
+        if (!$geminiApiKey) {
+            return response()->json(['error' => 'AI provider not configured.'], 503);
+        }
+
+        $message = $request->input('message');
+        $systemPrompt = $request->input('system_prompt', "You are a helpful assistant for MatchendIn.");
+
+        try {
+            $response = $this->callGeminiWithFallback($geminiApiKey, [
+                'systemInstruction' => [
+                    'parts' => [['text' => $systemPrompt]],
+                ],
+                'contents' => [[
+                    'parts' => [['text' => $message]],
+                ]],
+                'generationConfig' => [
+                    'temperature' => 0.7,
+                    'maxOutputTokens' => 1024,
+                ],
+            ], $this->geminiTimeoutSeconds());
+
+            if (!$response || !$response->successful()) {
+                return response()->json([
+                    'error' => $this->resolveGeminiErrorMessage($response, 'AI Service currently unavailable.'),
+                ], 503);
+            }
+
+            $textContent = (string) Arr::get($response->json(), 'candidates.0.content.parts.0.text', '');
+            return response()->json(['response' => $textContent]);
+        } catch (\Exception $e) {
+            Log::error('Chatbot bridge failed: ' . $e->getMessage());
         }
 
         return response()->json(['error' => 'AI Service currently unavailable.'], 503);
