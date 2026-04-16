@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             EtudiantCompetenceSeeder::class,
             OpportuniteCompetenceSeeder::class,
             TechnicalStackSeeder::class,
+            ComprehensiveTestDataSeeder::class,
         ]);
 
         // User::factory(10)->create();
