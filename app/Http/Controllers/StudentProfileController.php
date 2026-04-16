@@ -188,6 +188,7 @@ class StudentProfileController extends Controller
         }
 
         $trimmed = trim($url);
+        $appUrl = rtrim(env('APP_URL', 'http://localhost'), '/');
 
         if (str_starts_with($trimmed, 'http://') || str_starts_with($trimmed, 'https://')) {
             if (str_contains($trimmed, '/api/uploads/')) {
@@ -198,42 +199,42 @@ class StudentProfileController extends Controller
             $storagePos = strpos($trimmed, $storageNeedle);
             if ($storagePos !== false) {
                 $relativeFromStorage = substr($trimmed, $storagePos + strlen('/storage/'));
-                return url('/api/uploads/' . ltrim($relativeFromStorage, '/'));
+                return $appUrl . '/api/uploads/' . ltrim($relativeFromStorage, '/');
             }
 
             $uploadsNeedle = '/uploads/';
             $uploadsPos = strpos($trimmed, $uploadsNeedle);
             if ($uploadsPos !== false) {
                 $relativeFromUploads = substr($trimmed, $uploadsPos + 1);
-                return url('/api/uploads/' . ltrim($relativeFromUploads, '/'));
+                return $appUrl . '/api/uploads/' . ltrim($relativeFromUploads, '/');
             }
 
             return $trimmed;
         }
 
         if (str_starts_with($trimmed, '/api/uploads/')) {
-            return url($trimmed);
+            return $appUrl . $trimmed;
         }
 
         if (str_starts_with($trimmed, '/storage/uploads/')) {
             $relativePath = ltrim(substr($trimmed, strlen('/storage/')), '/');
-            return url('/api/uploads/' . $relativePath);
+            return $appUrl . '/api/uploads/' . $relativePath;
         }
 
         if (str_starts_with($trimmed, 'storage/uploads/')) {
             $relativePath = ltrim(substr($trimmed, strlen('storage/')), '/');
-            return url('/api/uploads/' . $relativePath);
+            return $appUrl . '/api/uploads/' . $relativePath;
         }
 
         if (str_starts_with($trimmed, '/uploads/')) {
-            return url('/api/uploads/' . ltrim($trimmed, '/'));
+            return $appUrl . '/api/uploads/' . ltrim($trimmed, '/');
         }
 
         if (str_starts_with($trimmed, 'uploads/')) {
-            return url('/api/uploads/' . $trimmed);
+            return $appUrl . '/api/uploads/' . $trimmed;
         }
 
-        return url('/api/uploads/' . ltrim($trimmed, '/'));
+        return $appUrl . '/api/uploads/' . ltrim($trimmed, '/');
     }
 
     private function isStudentRole(mixed $role): bool

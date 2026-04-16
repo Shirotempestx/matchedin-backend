@@ -15,9 +15,11 @@ class UploadController extends Controller
 
         if ($request->file('file')->isValid()) {
             $path = $request->file('file')->store('uploads', 'public');
+            $appUrl = rtrim(env('APP_URL', 'http://localhost'), '/');
+            $fullUrl = $appUrl . '/api/uploads/' . $path;
             
             return response()->json([
-                'url' => url('/api/uploads/' . $path),
+                'url' => $fullUrl,
             ]);
         }
 
@@ -46,6 +48,8 @@ class UploadController extends Controller
             Storage::disk('public')->path($normalizedPath),
             [
                 'Cache-Control' => 'public, max-age=31536000, immutable',
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Methods' => 'GET, OPTIONS',
             ]
         );
     }
