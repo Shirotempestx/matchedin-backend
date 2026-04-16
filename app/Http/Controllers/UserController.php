@@ -25,6 +25,7 @@ class UserController extends Controller
         $hasProfileType = Schema::hasColumn('users', 'profile_type');
         $hasEducationLevel = Schema::hasColumn('users', 'education_level');
         $hasSkillIds = Schema::hasColumn('users', 'skill_ids');
+        $hasOffreIsActive = Schema::hasColumn('offres', 'is_active');
 
         $select = ['id', 'name', 'email'];
         if ($hasCountry) {
@@ -128,7 +129,11 @@ class UserController extends Controller
             }
         }
 
-        $offres = $entreprise->offres()->where('is_active', true)->get();
+        $offresQuery = $entreprise->offres();
+        if ($hasOffreIsActive) {
+            $offresQuery->where('is_active', true);
+        }
+        $offres = $offresQuery->get();
 
         $students = $query->get()->map(function ($student) {
             $student->setAttribute('slug', Str::slug((string) $student->name));

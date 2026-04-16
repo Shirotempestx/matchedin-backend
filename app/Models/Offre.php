@@ -96,14 +96,25 @@ class Offre extends Model
         // Map user skills for O(1) lookup
         $userSkillsMap = [];
         foreach ($userSkills as $skill) {
-            $userSkillsMap[$skill['id']] = $skill['level'] ?? 1;
+            if (is_array($skill) && isset($skill['id'])) {
+                $userSkillsMap[(int) $skill['id']] = (int) ($skill['level'] ?? 1);
+                continue;
+            }
+
+            if (is_numeric($skill)) {
+                $userSkillsMap[(int) $skill] = 1;
+            }
         }
 
         $totalRequiredWeight = 0;
         $studentScore = 0;
 
         foreach ($offerSkills as $reqSkill) {
-            $reqId = $reqSkill['id'];
+            if (!is_array($reqSkill) || !isset($reqSkill['id'])) {
+                continue;
+            }
+
+            $reqId = (int) $reqSkill['id'];
             $reqLevel = (int) ($reqSkill['level'] ?? 1);
 
             $totalRequiredWeight += $reqLevel;
